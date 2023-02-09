@@ -31,3 +31,9 @@ def make_mp3_synthesisfb(h: np.ndarray, M: int) -> np.ndarray:
     L = len(h)
     G = np.flip(H, axis=0)
     return G
+
+def codec0(wavin, h, M, N):
+    L = 512;
+    num_of_samples = (N - 1)*M + L;
+
+    return a
