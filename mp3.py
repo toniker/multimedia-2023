@@ -1,4 +1,6 @@
 import numpy as np
+
+import nothing
 from frame import frame_sub_analysis, frame_sub_synthesis
 
 def make_mp3_analysisfb(h: np.ndarray, M: int) -> np.ndarray:
@@ -38,10 +40,16 @@ def codec0(wavin, h, M, N):
 
     wave_buffer = np.zeros(M * N + L)
     number_of_frames = len(wavin) / (N * M)
+    y_tot = np.array([N - 1 + L / M])
+    x_hat = np.array([])
     for i in range(int(number_of_frames)):
         wave_buffer = np.roll(wave_buffer, -N * M)
         wave_buffer[-N * M:] = wavin[i * N * M:(i + 1) * N * M].flatten()
-        x = frame_sub_analysis(wave_buffer, h, N)
-        y = frame_sub_synthesis(x, h)
+        y = frame_sub_analysis(wave_buffer, h, N)
+        Yc = nothing.donothing(y)
+        y_tot = np.append(y_tot, Yc.flatten())
+        Yh = nothing.idonothing(Yc)
+        x_hat = np.append(x_hat, frame_sub_synthesis(Yh, h))
 
-    return
+
+    return x_hat, y_tot
