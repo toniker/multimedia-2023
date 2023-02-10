@@ -3,6 +3,7 @@ import numpy as np
 import nothing
 from frame import frame_sub_analysis, frame_sub_synthesis
 
+
 def make_mp3_analysisfb(h: np.ndarray, M: int) -> np.ndarray:
     """
     @:param h η κρουστική απόκριση του πρότυπου βαθυπερατού φίλτρου
@@ -24,11 +25,6 @@ def make_mp3_analysisfb(h: np.ndarray, M: int) -> np.ndarray:
 
 
 def make_mp3_synthesisfb(h: np.ndarray, M: int) -> np.ndarray:
-    """
-    @:param h η κρουστική απόκριση του πρότυπου βαθυπερατού φίλτρου
-    @:param M ο αριθμός των ζωνών στις οποίες έχει γίνει ο διαχωρισμός
-    """
-
     H = make_mp3_analysisfb(h, M)
     L = len(h)
     G = np.flip(H, axis=0)
@@ -40,14 +36,17 @@ def codec0(wavin, h, M, N):
 
     wave_buffer = np.zeros(M * N + L)
     number_of_frames = len(wavin) / (N * M)
-    y_tot = np.array([N - 1 + L / M])
+    y_tot = np.array([])
     x_hat = np.array([])
     for i in range(int(number_of_frames)):
         wave_buffer = np.roll(wave_buffer, -N * M)
         wave_buffer[-N * M:] = wavin[i * N * M:(i + 1) * N * M].flatten()
         y = frame_sub_analysis(wave_buffer, h, N)
         Yc = nothing.donothing(y)
-        y_tot = np.append(y_tot, Yc.flatten())
+        if y_tot.shape[0] == 0:
+            y_tot = Yc
+        else:
+            y_tot = np.vstack((y_tot, Yc))
         Yh = nothing.idonothing(Yc)
         x_hat = np.append(x_hat, frame_sub_synthesis(Yh, h))
 

@@ -3,7 +3,6 @@ if __name__ == '__main__':
     import numpy as np
     from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb, codec0
     import matplotlib.pyplot as plt
-    from scipy.signal import CZT
     from scipy import signal
 
     with wave.open("myfile.wav", "rb") as wave_file:
