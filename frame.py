@@ -12,6 +12,7 @@ def frame_sub_analysis(xbuff: np.ndarray, H: np.ndarray, q: int) -> np.ndarray:
         ind[i, :] += ind[i - 1, :] + M
     ind = ind.astype(np.int64)
     X = xbuff[ind]
+    X = np.squeeze(X)
     Y = np.einsum('ik,kj->ij', X, H)
     return Y
 

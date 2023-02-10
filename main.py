@@ -1,10 +1,11 @@
 if __name__ == '__main__':
     import wave
     import numpy as np
-    from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
     import matplotlib.pyplot as plt
-    from scipy.signal import CZT
+
     from scipy import signal
+    from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
+    import frame
 
     with wave.open("myfile.wav", "rb") as wave_file:
         # Get number of frames
@@ -53,14 +54,34 @@ if __name__ == '__main__':
             # bark_f = 13 * arctan(0.00076 * f) + 3.5 * arctan((f / 7500)^2)
             bark_f = 13 * np.arctan(0.00076 * f) + 3.5 * np.arctan((f / 7500) ** 2)
             ax1[1].plot(bark_f, 10 * np.log10(abs(h) ** 2))
-        ax1[0].set_xlabel(r"Frequency (Hz)")
+        ax1[0].set_xlabel(r"Frequency f (Hz)")
         ax1[0].set_ylabel(r"$10log_{10}(|H(f)|^2 $")
         ax1[0].set_title(r"Frequency Response of Analysis Filters (Hz)")
+        ax1[0].grid()
 
-        ax1[1].set_xlabel(r"Frequency (barks)")
+        ax1[1].set_xlabel(r"Frequency z (barks)")
         ax1[1].set_ylabel(r"$10log_{10}(|H(f)|^2 $")
         ax1[1].set_title(r"Frequency Response of Analysis Filters (barks)")
+        ax1[1].grid()
 
         plt.show()
+
+        # 4a
+        N = 36
+        L = 512
+        M = 32;
+        q = N
+        sample = wave_data[0:(N-1)*M + L]
+        y = frame.frame_sub_analysis(sample,H,q)
+
+
+        #
+        # L, M = H.shape
+        # ind = np.zeros([q, L])
+        # ind[0, :] = np.arange(L)
+        #
+        # for i in range(1, q):
+        #     ind[i, :] += ind[i - 1, :] + M
+        # ind = ind.astype(np.int64)
 
         breakpoint()
