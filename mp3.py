@@ -31,24 +31,40 @@ def make_mp3_synthesisfb(h: np.ndarray, M: int) -> np.ndarray:
     return G
 
 
-def codec0(wavin, h, M, N):
+def coder0(wavin, h, M, N):
     L, M = h.shape
 
     wave_buffer = np.zeros(M * N + L)
     number_of_frames = len(wavin) / (N * M)
-    y_tot = np.array([])
-    x_hat = np.array([])
+    Y_tot = np.array([])
+
     for i in range(int(number_of_frames)):
         wave_buffer = np.roll(wave_buffer, -N * M)
         wave_buffer[-N * M:] = wavin[i * N * M:(i + 1) * N * M].flatten()
         y = frame_sub_analysis(wave_buffer, h, N)
         Yc = nothing.donothing(y)
-        if y_tot.shape[0] == 0:
-            y_tot = Yc
+
+        if Y_tot.shape[0] == 0:
+            Y_tot = Yc
         else:
-            y_tot = np.vstack((y_tot, Yc))
-        Yh = nothing.idonothing(Yc)
-        x_hat = np.append(x_hat, frame_sub_synthesis(Yh, h))
+            Y_tot = np.vstack((Y_tot, Yc))
+
+    return Y_tot
+
+def decoder0(Y_tot, h, M, N):
+    L, M = h.shape
+
+    Y_buffer = np.zeros([N + int(L/M), M])
+    number_of_frames = Y_tot.shape[0] // N
+    x_hat = np.array([])
+
+    Yh = nothing.idonothing(Y_tot)
+
+    for i in range(int(number_of_frames)):
+        Y_buffer = np.roll(Y_buffer, -N, axis=0)
+        Y_buffer[-N:,:] = Yh[i * N:(i + 1) * N,:]
+        x_hat = np.append(x_hat,frame_sub_synthesis(Y_buffer, h))
+
+    return x_hat
 
 
-    return x_hat, y_tot
