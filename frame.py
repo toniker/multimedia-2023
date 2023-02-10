@@ -2,8 +2,6 @@ import numpy as np
 
 
 def frame_sub_analysis(xbuff: np.ndarray, H: np.ndarray, q: int) -> np.ndarray:
-    """
-	"""
     L, M = H.shape
     ind = np.zeros([q, L])
     ind[0, :] = np.arange(L)
@@ -17,8 +15,6 @@ def frame_sub_analysis(xbuff: np.ndarray, H: np.ndarray, q: int) -> np.ndarray:
 
 
 def frame_sub_synthesis(ybuff: np.ndarray, G: np.ndarray) -> np.ndarray:
-    """
-	"""
     L, M = G.shape
     N = int(np.ceil(L / M))
 

@@ -1,7 +1,7 @@
 if __name__ == '__main__':
     import wave
     import numpy as np
-    from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
+    from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb, codec0
     import matplotlib.pyplot as plt
     from scipy.signal import CZT
     from scipy import signal
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         H = make_mp3_analysisfb(h, M)
 
         # 2-3.Compute Frequency Response of Analysis Filters (Hz)
-        fs = 44100;
+        fs = 44100
         fig, ax1 = plt.subplots(2,1,figsize=(15,15))
 
         for i in range(H.shape[1]):
@@ -53,6 +53,7 @@ if __name__ == '__main__':
             # bark_f = 13 * arctan(0.00076 * f) + 3.5 * arctan((f / 7500)^2)
             bark_f = 13 * np.arctan(0.00076 * f) + 3.5 * np.arctan((f / 7500) ** 2)
             ax1[1].plot(bark_f, 10 * np.log10(abs(h) ** 2))
+
         ax1[0].set_xlabel(r"Frequency (Hz)")
         ax1[0].set_ylabel(r"$10log_{10}(|H(f)|^2 $")
         ax1[0].set_title(r"Frequency Response of Analysis Filters (Hz)")
@@ -62,5 +63,8 @@ if __name__ == '__main__':
         ax1[1].set_title(r"Frequency Response of Analysis Filters (barks)")
 
         plt.show()
+        N = 36
+        L = 512
 
+        codec0(wave_data, H, M, N)
         breakpoint()
