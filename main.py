@@ -9,7 +9,8 @@ if __name__ == '__main__':
     with wave.open("myfile.wav", "rb") as wave_file:
         # Get number of frames
         num_frames = wave_file.getnframes()
-
+        sample_f = wave_file.getframerate()
+        t_audio = num_frames/sample_f
         # Read wave file as string of bytes
         wave_data = wave_file.readframes(num_frames)
 
@@ -41,7 +42,7 @@ if __name__ == '__main__':
 
         # 2-3.Compute Frequency Response of Analysis Filters (Hz)
         fs = 44100
-        fig, ax1 = plt.subplots(2,1,figsize=(15,15))
+        fig1, ax1 = plt.subplots(2, 1, figsize=(15, 15))
 
         for i in range(H.shape[1]):
             w, h = signal.freqz(H[:, i])
@@ -68,3 +69,19 @@ if __name__ == '__main__':
 
         Y_tot,x_hat = codec0(wave_data, H, M, N)
         breakpoint()
+
+        #plotting the signal amplitude (amplitude vs time)
+        times = np.linspace(0, num_frames/sample_f, num=num_frames)
+
+        fig2, ax2 = plt.subplots(2, 1, figsize=(15, 15))
+        ax2[0].plot(times, wave_data)
+        ax2[0].set_title('Original wave')
+        ax2[0].set_ylabel('Signal Value')
+        ax2[0].set_xlabel('Time (s)')
+        plt.xlim(0, t_audio)
+        ax2[1].plot(times, x_hat)
+        ax2[1].set_title('Reconstructed wave')
+        ax2[1].set_ylabel('Signal Value')
+        ax2[1].set_xlabel('Time (s)')
+        plt.xlim(0, t_audio)
+        plt.show()
