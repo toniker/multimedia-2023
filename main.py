@@ -5,12 +5,15 @@ if __name__ == '__main__':
     from codec0 import codec0
     import matplotlib.pyplot as plt
     from scipy import signal
-
+    import sounddevice as sd
+    from scipy.io.wavfile import write
+    import math
     with wave.open("myfile.wav", "rb") as wave_file:
         # Get number of frames
         num_frames = wave_file.getnframes()
-        sample_f = wave_file.getframerate()
-        t_audio = num_frames/sample_f
+        fs = wave_file.getframerate()
+        t_audio = num_frames / fs
+
         # Read wave file as string of bytes
         wave_data = wave_file.readframes(num_frames)
 
@@ -41,7 +44,6 @@ if __name__ == '__main__':
         H = make_mp3_analysisfb(h, M)
 
         # 2-3.Compute Frequency Response of Analysis Filters (Hz)
-        fs = 44100
         fig1, ax1 = plt.subplots(2, 1, figsize=(15, 15))
 
         for i in range(H.shape[1]):
@@ -64,14 +66,14 @@ if __name__ == '__main__':
         ax1[1].set_title(r"Frequency Response of Analysis Filters (barks)")
 
         plt.show()
+
+        # 7. Code and decode signal
         N = 36
         L = 512
-
         Y_tot,x_hat = codec0(wave_data, H, M, N)
-        breakpoint()
 
-        #plotting the signal amplitude (amplitude vs time)
-        times = np.linspace(0, num_frames/sample_f, num=num_frames)
+        # Plot original and reconstructed wave (amplitude vs time)
+        times = np.linspace(0, num_frames / fs, num=num_frames)
 
         fig2, ax2 = plt.subplots(2, 1, figsize=(15, 15))
         ax2[0].plot(times, wave_data)
@@ -85,3 +87,19 @@ if __name__ == '__main__':
         ax2[1].set_xlabel('Time (s)')
         plt.xlim(0, t_audio)
         plt.show()
+        breakpoint()
+
+        sd.play(wave_data,fs)
+        breakpoint()
+        sd.play(x_hat.astype(np.int16),fs)
+        #write("x_hat.wav", fs, x_hat.astype(np.int16))
+
+        # SNR
+
+        P_signal = np.mean((np.power(np.squeeze(wave_data),2*np.ones(wave_data.shape[0]))))
+        P_noise = np.mean(np.power((np.squeeze(wave_data) - x_hat),2*np.ones(wave_data.shape[0])))
+        SNR = P_signal/P_noise
+        SNR_dB = 10 * np.log10(SNR)
+        breakpoint()
+
+
