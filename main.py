@@ -1,7 +1,8 @@
 if __name__ == '__main__':
     import wave
     import numpy as np
-    from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb, coder0,decoder0
+    from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
+    from codec0 import codec0
     import matplotlib.pyplot as plt
     from scipy import signal
 
@@ -65,6 +66,5 @@ if __name__ == '__main__':
         N = 36
         L = 512
 
-        Y_tot = coder0(wave_data, H, M, N)
-        x_hat = decoder0(Y_tot, H, M, N)
+        Y_tot,x_hat = codec0(wave_data, H, M, N)
         breakpoint()
