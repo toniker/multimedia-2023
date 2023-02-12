@@ -8,6 +8,7 @@ if __name__ == '__main__':
     import sounddevice as sd
     from scipy.io.wavfile import write
     import math
+
     with wave.open("myfile.wav", "rb") as wave_file:
         # Get number of frames
         num_frames = wave_file.getnframes()
@@ -50,7 +51,7 @@ if __name__ == '__main__':
             w, h = signal.freqz(H[:, i])
 
             # f (Hz) = (w * fs)/2π
-            f = w*fs / 2*np.pi
+            f = w * fs / 2 * np.pi
             ax1[0].plot(f, 10 * np.log10(abs(h) ** 2))
 
             # bark_f = 13 * arctan(0.00076 * f) + 3.5 * arctan((f / 7500)^2)
@@ -70,7 +71,7 @@ if __name__ == '__main__':
         # 7. Code and decode signal
         N = 36
         L = 512
-        Y_tot,x_hat = codec0(wave_data, H, M, N)
+        Y_tot, x_hat = codec0(wave_data, H, M, N)
 
         # Plot original and reconstructed wave (amplitude vs time)
         times = np.linspace(0, num_frames / fs, num=num_frames)
@@ -89,17 +90,15 @@ if __name__ == '__main__':
         plt.show()
         breakpoint()
 
-        sd.play(wave_data,fs)
+        sd.play(wave_data, fs)
         breakpoint()
-        sd.play(x_hat.astype(np.int16),fs)
-        #write("x_hat.wav", fs, x_hat.astype(np.int16))
+        sd.play(x_hat.astype(np.int16), fs)
+        # write("x_hat.wav", fs, x_hat.astype(np.int16))
 
         # SNR
 
-        P_signal = np.mean((np.power(np.squeeze(wave_data),2*np.ones(wave_data.shape[0]))))
-        P_noise = np.mean(np.power((np.squeeze(wave_data) - x_hat),2*np.ones(wave_data.shape[0])))
-        SNR = P_signal/P_noise
+        P_signal = np.mean((np.power(np.squeeze(wave_data), 2 * np.ones(wave_data.shape[0]))))
+        P_noise = np.mean(np.power((np.squeeze(wave_data) - x_hat), 2 * np.ones(wave_data.shape[0])))
+        SNR = P_signal / P_noise
         SNR_dB = 10 * np.log10(SNR)
         breakpoint()
-
-

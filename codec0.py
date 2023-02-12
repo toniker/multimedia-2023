@@ -2,11 +2,13 @@ import numpy as np
 import nothing
 from frame import frame_sub_analysis, frame_sub_synthesis
 
+
 def codec0(wavin, h, M, N):
     Y_tot = coder0(wavin, h, M, N)
     x_xat = decoder0(Y_tot, h, M, N)
 
-    return Y_tot,x_xat
+    return Y_tot, x_xat
+
 
 def coder0(wavin, h, M, N):
     L, M = h.shape
@@ -28,10 +30,11 @@ def coder0(wavin, h, M, N):
 
     return Y_tot
 
+
 def decoder0(Y_tot, h, M, N):
     L, M = h.shape
 
-    Y_buffer = np.zeros([N + int(L/M), M])
+    Y_buffer = np.zeros([N + int(L / M), M])
     number_of_frames = Y_tot.shape[0] // N
     x_hat = np.array([])
 
@@ -39,7 +42,7 @@ def decoder0(Y_tot, h, M, N):
 
     for i in range(int(number_of_frames)):
         Y_buffer = np.roll(Y_buffer, -N, axis=0)
-        Y_buffer[-N:,:] = Yh[i * N:(i + 1) * N,:]
-        x_hat = np.append(x_hat,frame_sub_synthesis(Y_buffer, h))
+        Y_buffer[-N:, :] = Yh[i * N:(i + 1) * N, :]
+        x_hat = np.append(x_hat, frame_sub_synthesis(Y_buffer, h))
 
     return x_hat
