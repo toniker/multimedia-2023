@@ -11,5 +11,4 @@ def iframeDCT(c, M, N):
 
 
 def DCTpower(c):
-    to_log = lambda x: 10 * np.log10(abs(x)**2)
-    return np.vectorize(to_log)(c)
+    return 10 * np.log10(abs(c)**2)
