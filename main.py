@@ -100,16 +100,18 @@ if __name__ == '__main__':
 
         wave = np.squeeze(wave_data)
         x_hat_shifted = x_hat[shift:]
-        wave_data_shifted = wave[:,-shift]
+        wave_data_shifted = wave[:-shift]
+        x_hat_shifted.astype('int64')
+        wave_data_shifted.astype('int64')
 
-        P_signal = np.mean(wave_data_shifted ** 2)
-        P_noise = np.mean((wave_data_shifted - x_hat_shifted) ** 2)
+        P_signal =10 * np.log10(np.mean((wave_data_shifted.astype('int64')) ** 2))
+        P_noise = 10 * np.log10(np.mean((wave_data_shifted - x_hat_shifted) ** 2))
+
         SNR = P_signal/P_noise
-        SNR_dB = 10 * np.log10(SNR)
         breakpoint()
 
         """
-        Section 3.2- DCT
+        Section 3.2- DCT 
         """
         c = DCT.frameDCT(Y_tot[:N,:])
         Y = DCT.iframeDCT(c,M, N)
