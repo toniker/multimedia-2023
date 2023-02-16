@@ -4,19 +4,19 @@ import numpy as np
 def Dksparse(Kmax):
     Dk = np.zeros((Kmax, Kmax))
 
-    if 2 < Kmax < 282:
-        delta_k = [2]
-    elif 282 <= Kmax < 570:
-        delta_k = [i for i in range(2, 14)]
-    elif 570 <= Kmax < 1152:
-        delta_k = [i for i in range(2, 28)]
-    else:
-        delta_k = [0]
+    for k in range(Kmax):
+        if 2 < k < 282:
+            delta_k = [2]
+        elif 282 <= k < 570:
+            delta_k = [i for i in range(2, 14)]
+        elif 570 <= k < 1152:
+            delta_k = [i for i in range(2, 28)]
+        else:
+            delta_k = []
 
-    for i in range(Kmax):
         for j in range(Kmax):
             if j in delta_k:
-                Dk[i, j] = 1
+                Dk[k, j] = 1
     return Dk
 
 
