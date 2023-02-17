@@ -73,18 +73,16 @@ def STreduction(ST, c, Tq):
     fs = 44100
 
     # frequency (Hz) corresponding to each possible masker
-    f_Hz = fs/(2*MN) * ST
+    f_Hz = fs/(2*MN) * np.array(maskers)
     # frequency (barks) corresponding to each possible masker
     f_barks = Hz2Barks(f_Hz)
 
-    # Calculate distance in frequency (barks) between the maskers
-    m = []
-    for i in range(len(f_barks)-1):
-        if (np.abs(f_barks[i] - f_barks[i+1]) <= 0.5):
-            if P_ST[i + 1] > P_ST[i]:
-                m.append(P_ST[i + 1])
-            else:
-                m.append(P_ST[i])
-
-
     breakpoint()
+    # Calculate distance in frequency (barks) between the maskers
+    distance = np.array([])
+    for i in range(len(f_barks)-1):
+        distance = np.append(distance,np.abs(f_barks[i] - f_barks[i+1]))
+    ind = np.where(distance > 0.5)
+    ind = np.append(ind,len(maskers)-1)
+
+    maskers = [maskers[i] for i in ind]
