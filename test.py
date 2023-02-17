@@ -7,6 +7,7 @@ import tonalMasking
 M = 32
 N = 36
 L = 512
+Tq = np.load("Tq.npy", allow_pickle=True)
 
 with wave.open("myfile.wav", "rb") as wave_file:
     num_frames = wave_file.getnframes()
@@ -28,9 +29,11 @@ with wave.open("myfile.wav", "rb") as wave_file:
 
     Kmax = M*N - 1
     Dk = tonalMasking.Dksparse(Kmax)
-    frame = Y_tot[4*N:5*N, :]
+    frame = Y_tot[7*N:8*N, :]
     c = DCT.frameDCT(frame)
     p = tonalMasking.DCTpower(c)
     St = tonalMasking.STinit(c,Dk)
+
     PM = tonalMasking.MaskPower(c,St)
     breakpoint()
+    test = tonalMasking.STreduction(St,c,Tq.reshape(-1,1))
