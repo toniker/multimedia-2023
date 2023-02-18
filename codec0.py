@@ -19,7 +19,8 @@ def coder0(wavin, h, M, N):
 
     for i in range(int(number_of_frames)):
         wave_buffer = np.roll(wave_buffer, -N * M)
-        wave_buffer[-N * M:] = wavin[i * N * M:(i + 1) * N * M].flatten()
+        wave_buffer[-N * M:] = wavin[
+                               i * N * M:(i + 1) * N * M].flatten()  # Is this (i * N * M:(i + 1) * N * M) correct?
         y = frame_sub_analysis(wave_buffer, h, N)
         Yc = nothing.donothing(y)
 
@@ -38,7 +39,7 @@ def decoder0(Y_tot, h, M, N):
     number_of_frames = Y_tot.shape[0] // N
     x_hat = np.array([])
 
-    Yh = nothing.idonothing(Y_tot)
+    Yh = nothing.idonothing(Y_tot)  # This is not done for every frame
 
     for i in range(int(number_of_frames)):
         Y_buffer = np.roll(Y_buffer, -N, axis=0)
