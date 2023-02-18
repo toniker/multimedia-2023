@@ -52,6 +52,8 @@ def Hz2Barks(f):
     return z
 
 def STreduction(ST, c, Tq):
+    # 2 Eliminations: 1st elimination for maskers below hearing threshold
+    #                 2nd elimination for maskers depending on the distance in bark frequency
 
     # Calculate the Power of each possible tone
     P_ST = MaskPower(c, ST)
@@ -59,30 +61,28 @@ def STreduction(ST, c, Tq):
     # Find the hearing threshold for each tone frequency
     Tq_ST = Tq[ST]
 
-    # Eliminate the maskers with power below the hearing threshold
+    # 1st Elimination
     cond = P_ST > Tq_ST.reshape(1,-1)
     cond = np.squeeze(cond).tolist()
+    maskers_1st_elim = [ST[i] if cond[i] else float('nan') for i in range(len(ST))]
 
-    breakpoint()
-    maskers = [ST[i] if cond[i] else float('nan') for i in range(len(ST))]
-    breakpoint()
-
-    # Find the distance between each possible masker
-
+    # 2nd Elimination
     MN = len(c)
     fs = 44100
 
     # frequency (Hz) corresponding to each possible masker
-    f_Hz = fs/(2*MN) * np.array(maskers)
+    f_Hz = fs/(2*MN) * np.array(maskers_1st_elim)
+
     # frequency (barks) corresponding to each possible masker
     f_barks = Hz2Barks(f_Hz)
 
-    breakpoint()
     # Calculate distance in frequency (barks) between the maskers
     distance = np.array([])
     for i in range(len(f_barks)-1):
         distance = np.append(distance,np.abs(f_barks[i] - f_barks[i+1]))
     ind = np.where(distance > 0.5)
-    ind = np.append(ind,len(maskers)-1)
+    ind = np.append(ind,len(f_barks)-1)
 
-    maskers = [maskers[i] for i in ind]
+    STr = [maskers_1st_elim[i] for i in ind]
+    PMr = [P_ST[i] for i in ind]
+
