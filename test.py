@@ -38,7 +38,6 @@ with wave.open("myfile.wav", "rb") as wave_file:
 
     PM = tonalMasking.MaskPower(c,St)
     STr,PTr = tonalMasking.STreduction(St,c,Tq.reshape(-1,1))
-    breakpoint()
     Sf = tonalMasking.SpreadFunc(STr, PM, Kmax)
     Ti = tonalMasking.Masking_Thresholds(STr, PM,Kmax)
     Tg = tonalMasking.Global_Masking_Thresholds(Ti, Tq)
