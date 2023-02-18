@@ -123,11 +123,18 @@ def SpreadFunc(ST, PM,Kmax):
                 Sf[i, k] = (0.15 * PM[k] - 17) * Dz_k[i] - 0.15 * PM[k]
             else:
                 Sf[i, k] = 0
-    breakpoint()
-        # for k in Dz_k:
-            # if k > -3 and k < -1:
-                # Sf_k 17 *
-
-
-    Sf = []
     return Sf
+
+def Masking_Thresholds(ST, PM,Kmax):
+    fs = 44100
+    MN = Kmax+1
+
+    Ti = np.zeros([Kmax+1,len(ST)])
+    f_Hz_k = fs / (2 * MN) * np.array(ST)
+    f_barks_k = Hz2Barks(f_Hz_k)
+    Sf = SpreadFunc(ST, PM,Kmax)
+
+    for k in range(len(ST)):
+        breakpoint()
+        Ti[:,k] = PM[k] - 0.275*f_barks_k[k] + Sf[:,k] - 6.025
+    return Ti
