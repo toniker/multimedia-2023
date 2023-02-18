@@ -104,18 +104,13 @@ if __name__ == '__main__':
 
         x_hat_shifted = x_hat[shift:]
         wave_data_shifted = wave_data[:-shift]
-        x_hat_shifted.astype('int64')
-        wave_data_shifted.astype('int64')
+        x_hat_shifted = x_hat_shifted.astype('int64')
+        wave_data_shifted = wave_data_shifted.astype('int64')
 
-        ind1 = np.argmax(x_hat)
-        ind2 = np.argmax(wave_data)
-        ind3 = np.argmax(x_hat_shifted)
-        ind4 = np.argmax(wave_data_shifted)
-
-        P_signal = 10 * np.log10(np.mean((wave_data_shifted.astype('int64')) ** 2))
+        P_signal = 10 * np.log10(np.mean(wave_data_shifted ** 2))
         P_noise = 10 * np.log10(np.mean((wave_data_shifted - x_hat_shifted) ** 2))
 
-        SNR = P_signal / P_noise
+        SNR = P_signal/P_noise
         breakpoint()
 
         """
