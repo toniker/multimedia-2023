@@ -41,3 +41,4 @@ with wave.open("myfile.wav", "rb") as wave_file:
     breakpoint()
     Sf = tonalMasking.SpreadFunc(STr, PM, Kmax)
     Ti = tonalMasking.Masking_Thresholds(STr, PM,Kmax)
+    Tg = tonalMasking.Global_Masking_Thresholds(Ti, Tq)

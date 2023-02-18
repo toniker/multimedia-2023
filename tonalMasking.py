@@ -144,6 +144,15 @@ def Masking_Thresholds(ST, PM, Kmax):
     Sf = SpreadFunc(ST, PM, Kmax)
 
     for k in range(len(ST)):
-        breakpoint()
         Ti[:, k] = PM[k] - 0.275 * f_barks_k[k] + Sf[:, k] - 6.025
     return Ti
+
+
+def Global_Masking_Thresholds(Ti, Tq):
+    Tq = np.squeeze(Tq)
+    Tg = np.zeros(Ti.shape[0])
+    for i in range(Ti.shape[0]):
+        sum = np.sum(10 ** (0.1 * Ti[i, :]))
+        Tg[i] = 10 * np.log10(10 ** (0.1 * Tq[i]) + sum)
+
+    return Tg
