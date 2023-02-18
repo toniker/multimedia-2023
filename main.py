@@ -102,9 +102,8 @@ if __name__ == '__main__':
         # SNR
         shift = L - M
 
-        wave = np.squeeze(wave_data)
         x_hat_shifted = x_hat[shift:]
-        wave_data_shifted = wave[:-shift]
+        wave_data_shifted = wave_data[:-shift]
         x_hat_shifted.astype('int64')
         wave_data_shifted.astype('int64')
 
