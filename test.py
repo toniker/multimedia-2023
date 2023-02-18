@@ -25,19 +25,18 @@ with wave.open("myfile.wav", "rb") as wave_file:
     h = np.load("h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )
     H = make_mp3_analysisfb(h, M)
     Y_tot, x_hat = codec0.codec0(wave_data, H, M, N)
-    breakpoint()
 
     num_of_frames = len(wave_data) / (N * M)
     Kmax = M*N - 1
     Dk = tonalMasking.Dksparse(Kmax)
+
     frame = Y_tot[6*N:7*N, :]
+
     c = DCT.frameDCT(frame)
     p = tonalMasking.DCTpower(c)
     St = tonalMasking.STinit(c,Dk)
 
-    breakpoint()
     PM = tonalMasking.MaskPower(c,St)
-    breakpoint()
     STr,PTr = tonalMasking.STreduction(St,c,Tq.reshape(-1,1))
     breakpoint()
     Sf = tonalMasking.SpreadFunc(STr, PM, Kmax)

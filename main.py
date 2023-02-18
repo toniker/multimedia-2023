@@ -9,7 +9,7 @@ if __name__ == '__main__':
     from scipy.io.wavfile import write
     import DCT
 
-    draw_plots = False
+    draw_plots = True
     play_sounds = False
 
     with wave.open("myfile.wav", "rb") as wave_file:

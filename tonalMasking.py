@@ -56,7 +56,6 @@ def STreduction(ST, c, Tq):
     #                 2nd elimination for maskers depending on the distance in bark frequency
 
     is_empy = len(ST) == 0
-    breakpoint()
     if is_empy:
         STr = []
         PMr = []
@@ -90,7 +89,6 @@ def STreduction(ST, c, Tq):
         ind = np.where(distance > 0.5)
         ind = np.append(ind,len(f_barks)-1)
 
-        breakpoint()
         STr = [maskers_1st_elim[i] for i in ind]
         PMr = [P_ST[i] for i in ind]
 
@@ -111,10 +109,25 @@ def SpreadFunc(ST, PM,Kmax):
     for k in range(len(f_barks_k)):
         for i in range(len(f_barks_i)):
             Dz[i,k] = f_barks_i[i] - f_barks_k[k]
-    breakpoint()
 
     for k in range(len(f_barks_k)):
         Dz_k = Dz[:,k]
-        np.where(Dz_k >= -3 and Dz_k < -1)
+        for i in range(len(Dz_k)):
+            if -3 < Dz_k[i] < -1:
+                Sf[i, k] = 17 * Dz_k[i] - 0.4 * PM[k] + 11
+            elif -1 <= Dz_k[i] < 0:
+                Sf[i, k] = (0.4 * PM[k] + 6) * Dz_k[i]
+            elif 0 <= Dz_k[i] < 1:
+                Sf[i, k] = -17 * Dz_k[i]
+            elif 1 <= Dz_k[i] < 3:
+                Sf[i, k] = (0.15 * PM[k] - 17) * Dz_k[i] - 0.15 * PM[k]
+            else:
+                Sf[i, k] = 0
+    breakpoint()
+        # for k in Dz_k:
+            # if k > -3 and k < -1:
+                # Sf_k 17 *
+
+
     Sf = []
     return Sf
