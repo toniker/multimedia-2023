@@ -27,13 +27,17 @@ with wave.open("myfile.wav", "rb") as wave_file:
     Y_tot, x_hat = codec0.codec0(wave_data, H, M, N)
     breakpoint()
 
+    num_of_frames = len(wave_data) / (N * M)
     Kmax = M*N - 1
     Dk = tonalMasking.Dksparse(Kmax)
-    frame = Y_tot[7*N:8*N, :]
+    frame = Y_tot[6*N:7*N, :]
     c = DCT.frameDCT(frame)
     p = tonalMasking.DCTpower(c)
     St = tonalMasking.STinit(c,Dk)
 
+    breakpoint()
     PM = tonalMasking.MaskPower(c,St)
     breakpoint()
-    test = tonalMasking.STreduction(St,c,Tq.reshape(-1,1))
+    STr,PTr = tonalMasking.STreduction(St,c,Tq.reshape(-1,1))
+    breakpoint()
+    Sf = tonalMasking.SpreadFunc(STr, PM, Kmax)

@@ -33,7 +33,7 @@ def STinit(c,D):
                 if check:
                     St.append(k)
     return St
-
+    breakpoint()
 def MaskPower(c, ST):
     P_DCT = DCTpower(c)
     P_Mask = np.array([])
@@ -55,34 +55,66 @@ def STreduction(ST, c, Tq):
     # 2 Eliminations: 1st elimination for maskers below hearing threshold
     #                 2nd elimination for maskers depending on the distance in bark frequency
 
-    # Calculate the Power of each possible tone
-    P_ST = MaskPower(c, ST)
+    is_empy = len(ST) == 0
+    breakpoint()
+    if is_empy:
+        STr = []
+        PMr = []
 
-    # Find the hearing threshold for each tone frequency
-    Tq_ST = Tq[ST]
+    else:
+        # Calculate the Power of each possible tone
+        P_ST = MaskPower(c, ST)
 
-    # 1st Elimination
-    cond = P_ST > Tq_ST.reshape(1,-1)
-    cond = np.squeeze(cond).tolist()
-    maskers_1st_elim = [ST[i] if cond[i] else float('nan') for i in range(len(ST))]
+        # Find the hearing threshold for each tone frequency
+        Tq_ST = Tq[ST]
 
-    # 2nd Elimination
-    MN = len(c)
+        # 1st Elimination
+        cond = P_ST > Tq_ST.reshape(1,-1)
+        cond = np.squeeze(cond).tolist()
+        maskers_1st_elim = [ST[i] if cond[i] else float('nan') for i in range(len(ST))]
+
+        # 2nd Elimination
+        MN = len(c)
+        fs = 44100
+
+        # frequency (Hz) corresponding to each possible masker
+        f_Hz = fs/(2*MN) * np.array(maskers_1st_elim)
+
+        # frequency (barks) corresponding to each possible masker
+        f_barks = Hz2Barks(f_Hz)
+
+        # Calculate distance in frequency (barks) between the maskers
+        distance = np.array([])
+        for i in range(len(f_barks)-1):
+            distance = np.append(distance,np.abs(f_barks[i] - f_barks[i+1]))
+        ind = np.where(distance > 0.5)
+        ind = np.append(ind,len(f_barks)-1)
+
+        breakpoint()
+        STr = [maskers_1st_elim[i] for i in ind]
+        PMr = [P_ST[i] for i in ind]
+
+    return STr,PMr
+
+def SpreadFunc(ST, PM,Kmax):
     fs = 44100
+    MN = Kmax+1
 
-    # frequency (Hz) corresponding to each possible masker
-    f_Hz = fs/(2*MN) * np.array(maskers_1st_elim)
+    Dz = np.zeros([Kmax+1,len(ST)])
+    Sf = np.zeros([Kmax+1,len(ST)])
 
-    # frequency (barks) corresponding to each possible masker
-    f_barks = Hz2Barks(f_Hz)
+    f_Hz_i = fs/(2*MN) * np.arange(0,Kmax)
+    f_barks_i = Hz2Barks(f_Hz_i)
+    f_Hz_k = fs/(2*MN) * np.array(ST)
+    f_barks_k = Hz2Barks(f_Hz_k)
 
-    # Calculate distance in frequency (barks) between the maskers
-    distance = np.array([])
-    for i in range(len(f_barks)-1):
-        distance = np.append(distance,np.abs(f_barks[i] - f_barks[i+1]))
-    ind = np.where(distance > 0.5)
-    ind = np.append(ind,len(f_barks)-1)
+    for k in range(len(f_barks_k)):
+        for i in range(len(f_barks_i)):
+            Dz[i,k] = f_barks_i[i] - f_barks_k[k]
+    breakpoint()
 
-    STr = [maskers_1st_elim[i] for i in ind]
-    PMr = [P_ST[i] for i in ind]
-
+    for k in range(len(f_barks_k)):
+        Dz_k = Dz[:,k]
+        np.where(Dz_k >= -3 and Dz_k < -1)
+    Sf = []
+    return Sf
