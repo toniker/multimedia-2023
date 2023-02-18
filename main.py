@@ -21,14 +21,11 @@ if __name__ == '__main__':
         # Read wave file as string of bytes
         wave_data = wave_file.readframes(num_frames)
 
-        # Set the datatype to the sample width
-        dtype = np.int16
-
         # Convert to NumPy array
-        wave_data = np.frombuffer(wave_data, dtype=dtype)
+        wave_data = np.frombuffer(wave_data, dtype=np.int16)
 
         # Reshape since we have a single channel
-        wave_data = wave_data.reshape((num_frames, 1))
+        wave_data = wave_data.reshape(num_frames)
 
         # Load data from file
         h = np.load("h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )
