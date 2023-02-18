@@ -156,3 +156,21 @@ def Global_Masking_Thresholds(Ti, Tq):
         Tg[i] = 10 * np.log10(10 ** (0.1 * Tq[i]) + sum)
 
     return Tg
+
+
+def psycho(c, D):
+    # Load data from file
+    Tq = np.load("Tq.npy", allow_pickle=True)
+
+    p = DCTpower(c)
+    St = STinit(c, D)
+
+    M, N = c.shape
+    Kmax = M * N - 1
+    PM = MaskPower(c, St)
+    STr, PTr = STreduction(St, c, Tq.reshape(-1, 1))
+    Sf = SpreadFunc(STr, PM, Kmax)
+    Ti = Masking_Thresholds(STr, PM, Kmax)
+    Tg = Global_Masking_Thresholds(Ti, Tq)
+
+    return Tg
