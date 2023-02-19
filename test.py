@@ -3,6 +3,7 @@ import DCT,codec0
 from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
 import wave
 import tonalMasking
+import matplotlib.pyplot as plt
 
 M = 32
 N = 36
@@ -33,11 +34,10 @@ with wave.open("myfile.wav", "rb") as wave_file:
     frame = Y_tot[6*N:7*N, :]
 
     c = DCT.frameDCT(frame)
-    p = tonalMasking.DCTpower(c)
-    St = tonalMasking.STinit(c,Dk)
+    St = tonalMasking.STinit(c, Dk)
+    STr, PTr = tonalMasking.STreduction(St, c, Tq.reshape(-1, 1))
 
-    PM = tonalMasking.MaskPower(c,St)
-    STr,PTr = tonalMasking.STreduction(St,c,Tq.reshape(-1,1))
-    Sf = tonalMasking.SpreadFunc(STr, PM, Kmax)
-    Ti = tonalMasking.Masking_Thresholds(STr, PM,Kmax)
-    Tg = tonalMasking.Global_Masking_Thresholds(Ti, Tq)
+    Tg = tonalMasking.psycho(c,Dk)
+
+
+    tonalMasking.print_hearing_threshold(Tg,Tq,STr,Kmax)

@@ -1,6 +1,5 @@
 import numpy as np
-
-
+import matplotlib.pyplot as plt
 def DCTpower(c):
     return 10 * np.log10(c.astype('int64') ** 2)
 
@@ -174,3 +173,21 @@ def psycho(c, D):
     Tg = Global_Masking_Thresholds(Ti, Tq)
 
     return Tg
+
+def plot_hearing_threshold(Tg,Tq,STr,Kmax):
+    fs = 44100
+    MN = Kmax + 1
+
+    f_Hz = fs / (2 * MN) * np.arange(0,Kmax+1)
+    f_barks = Hz2Barks(f_Hz)
+
+    plt.plot(f_barks,Tg,label='Tq')
+    plt.plot(f_barks,np.squeeze(Tq.reshape(-1,1)),label='Tg')
+    markerline, stemlines,baseline =plt.stem(f_barks[STr],Tg[STr], '-.',linefmt  = 'purple', bottom=-12, label='maskers',basefmt=" ")
+    plt.setp(stemlines, 'linestyle', 'dotted')
+
+    plt.ylim(-10,70)
+    plt.ylabel('Masking Threshold')
+    plt.xlabel('Frequency (barks)')
+    plt.legend()
+    plt.show()
