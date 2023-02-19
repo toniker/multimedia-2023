@@ -17,7 +17,7 @@ def huff(run_symbols):
     symbol_occurrences = np.sum(run_symbols[:, 1])
 
     # Create output arrays
-    frame_stream = np.array([])
+    frame_stream = [None] * len(symbols)
     frame_symbol_prob = np.zeros((len(symbols), 3))
 
     # iterate over unique symbols
@@ -56,4 +56,7 @@ def huff(run_symbols):
 
     codes = generate_codes(node, '')
 
-    return frame_symbol_prob
+    for i, _ in enumerate(codes):
+        frame_stream[i] = codes[i]
+
+    return frame_stream, frame_symbol_prob
