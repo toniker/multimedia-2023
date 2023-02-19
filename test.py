@@ -4,6 +4,7 @@ from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
 import wave
 import tonalMasking
 
+import rle
 M = 32
 N = 36
 L = 512
@@ -41,3 +42,8 @@ with wave.open("myfile.wav", "rb") as wave_file:
     Sf = tonalMasking.SpreadFunc(STr, PM, Kmax)
     Ti = tonalMasking.Masking_Thresholds(STr, PM,Kmax)
     Tg = tonalMasking.Global_Masking_Thresholds(Ti, Tq)
+
+    symb_index = np.array([0, 0, 1, 2, 3, 3, 2, 0, 0, 0, 0, 2, 3, 4])
+    run_symbols = rle.RLEencode(K=len(symb_index), symb_index=symb_index)
+    decoded_symb_index = rle.RLEdecode(K=len(run_symbols), run_symbols=run_symbols)
+    breakpoint()
