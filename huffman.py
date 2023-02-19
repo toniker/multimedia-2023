@@ -29,6 +29,7 @@ def huff(run_symbols):
         frame_symbol_prob[i, 1] = count
         frame_symbol_prob[i, 2] = count / symbol_occurrences
 
+    # Discard the column of the table with the number of appearances
     h = [(p, s) for s, _, p in frame_symbol_prob]
     heapq.heapify(h)
 
@@ -38,7 +39,10 @@ def huff(run_symbols):
         node = Node(s1, s2)
         heapq.heappush(h, (p1 + p2, node))
 
+    # Get the root node of the tree
     _, node = h[0]
+
+    del p1, s1, p2, s2, h, _
 
     def generate_codes(node, code="", codes={}):
         # If the node is a leaf, save the code for the symbol.
