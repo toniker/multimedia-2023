@@ -1,5 +1,6 @@
 import numpy as np
 import DCT,codec0
+import huffman
 from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
 import wave
 import tonalMasking
@@ -46,4 +47,6 @@ with wave.open("myfile.wav", "rb") as wave_file:
     symb_index = np.array([0, 0, 1, 2, 3, 3, 2, 0, 0, 0, 0, 2, 3, 4])
     run_symbols = rle.RLEencode(K=len(symb_index), symb_index=symb_index)
     decoded_symb_index = rle.RLEdecode(K=len(run_symbols), run_symbols=run_symbols)
+
+    frame_stream, frame_symbol_prob = huffman.huff(run_symbols)
     breakpoint()
