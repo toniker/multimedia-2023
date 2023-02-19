@@ -38,4 +38,22 @@ def huff(run_symbols):
         node = Node(s1, s2)
         heapq.heappush(h, (p1 + p2, node))
 
+    _, node = h[0]
+
+    def generate_codes(node, code="", codes={}):
+        # If the node is a leaf, save the code for the symbol.
+        if isinstance(node, np.floating):
+            codes[node] = code
+            return
+
+        # Traverse the left subtree and append 0 to the code.
+        generate_codes(node.left, code + "0", codes)
+
+        # Traverse the right subtree and append 1 to the code.
+        generate_codes(node.right, code + "1", codes)
+
+        return codes
+
+    codes = generate_codes(node, '')
+
     return frame_symbol_prob
