@@ -25,7 +25,7 @@ def huff(run_symbols):
     for i, symbol in enumerate(symbols):
         frame_symbol_prob[i] = np.hstack((symbol, symbol_occurrences[i]))
 
-    # Discard the column of the table with the number of appearances
+    # Organize contents of frame_symbol_prob into a probability and a tuple of the RLE encoded value
     h = [(p, (v, r)) for v, r, p in frame_symbol_prob]
     heapq.heapify(h)
 
