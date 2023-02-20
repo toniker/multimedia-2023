@@ -49,4 +49,5 @@ with wave.open("myfile.wav", "rb") as wave_file:
     decoded_symb_index = rle.RLEdecode(K=len(run_symbols), run_symbols=run_symbols)
 
     frame_stream, frame_symbol_prob = huffman.huff(run_symbols)
+    run_symbols2 = huffman.ihuff(frame_stream, frame_symbol_prob)
     breakpoint()
