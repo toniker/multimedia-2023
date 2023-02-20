@@ -7,30 +7,26 @@ class Node:
         self.left = left
         self.right = right
 
+    def __lt__(self, other):
+        return True
+
     def children(self):
         return self.left, self.right
 
 
 def huff(run_symbols):
-    # Get all unique symbols and their number of occurrences
-    symbols = np.unique(run_symbols[:, 0])
-    symbol_occurrences = np.sum(run_symbols[:, 1])
+    symbols, symbol_occurrences = np.unique(run_symbols, axis=0, return_counts=True)
 
     # Create output arrays
-    frame_stream = [None] * len(symbols)
+    frame_stream = ""
     frame_symbol_prob = np.zeros((len(symbols), 3))
 
     # iterate over unique symbols
     for i, symbol in enumerate(symbols):
-        # Count all occurrences of this symbol
-        count = np.sum(run_symbols[run_symbols[:, 0] == symbol, 1])
-
-        frame_symbol_prob[i, 0] = symbol
-        frame_symbol_prob[i, 1] = count
-        frame_symbol_prob[i, 2] = count / symbol_occurrences
+        frame_symbol_prob[i] = np.hstack((symbol, symbol_occurrences[i]))
 
     # Discard the column of the table with the number of appearances
-    h = [(p, s) for s, _, p in frame_symbol_prob]
+    h = [(p, (v, r)) for v, r, p in frame_symbol_prob]
     heapq.heapify(h)
 
     while len(h) >= 2:
@@ -46,7 +42,7 @@ def huff(run_symbols):
 
     def generate_codes(node, code="", codes={}):
         # If the node is a leaf, save the code for the symbol.
-        if isinstance(node, np.floating):
+        if isinstance(node, tuple):
             codes[node] = code
             return
 
@@ -60,7 +56,7 @@ def huff(run_symbols):
 
     codes = generate_codes(node, '')
 
-    for i, _ in enumerate(codes):
-        frame_stream[i] = codes[i]
+    for symbol in run_symbols:
+        frame_stream += codes[tuple(symbol)]
 
     return frame_stream, frame_symbol_prob
