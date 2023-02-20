@@ -3,7 +3,7 @@ import DCT,codec0
 from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
 import wave
 import tonalMasking
-import matplotlib.pyplot as plt
+import Quantizer
 
 M = 32
 N = 36
@@ -31,13 +31,17 @@ with wave.open("myfile.wav", "rb") as wave_file:
     Kmax = M*N - 1
     Dk = tonalMasking.Dksparse(Kmax)
 
-    frame = Y_tot[6*N:7*N, :]
 
+    frame = Y_tot[4*N:5*N, :]
     c = DCT.frameDCT(frame)
-    St = tonalMasking.STinit(c, Dk)
-    STr, PTr = tonalMasking.STreduction(St, c, Tq.reshape(-1, 1))
-
     Tg = tonalMasking.psycho(c,Dk)
+    cs,sc = Quantizer.DCT_band_scale(c)
+    # s = Quantizer.quantizer(cs,4)
+    # d = Quantizer.dequantizer(s,4)
+    symb_index,SF,B = Quantizer.all_bands_quantizer(c,Tg)
+    xh = Quantizer.all_bands_dequantizer(symb_index, B, SF)
 
-
-    tonalMasking.print_hearing_threshold(Tg,Tq,STr,Kmax)
+    eb = np.abs(c.T - xh)
+    P_eb = 10 * np.log10(eb ** 2)
+    MSE = np.mean(eb)
+    breakpoint()

@@ -35,7 +35,6 @@ def STinit(c, D):
                 if check:
                     St.append(k)
     return St
-    breakpoint()
 
 
 def MaskPower(c, ST):
@@ -51,11 +50,9 @@ def MaskPower(c, ST):
         P_Mask = np.append(P_Mask, p)
     return P_Mask
 
-
 def Hz2Barks(f):
     z = 13 * np.arctan(0.00076 * f) + 3.5 * np.arctan((f / 7500) ** 2)
     return z
-
 
 def STreduction(ST, c, Tq):
     # 2 Eliminations: 1st elimination for maskers below hearing threshold
@@ -74,8 +71,9 @@ def STreduction(ST, c, Tq):
         Tq_ST = Tq[ST]
 
         # 1st Elimination
+
         cond = P_ST > Tq_ST.reshape(1, -1)
-        cond = np.squeeze(cond).tolist()
+        cond = cond[0]
         maskers_1st_elim = [ST[i] if cond[i] else float('nan') for i in range(len(ST))]
 
         # 2nd Elimination
@@ -129,7 +127,7 @@ def SpreadFunc(ST, PM, Kmax):
             elif 1 <= Dz_k[i] < 3:
                 Sf[i, k] = (0.15 * PM[k] - 17) * Dz_k[i] - 0.15 * PM[k]
             else:
-                Sf[i, k] = 0
+                Sf[i, k] = -np.inf
     return Sf
 
 
@@ -153,7 +151,6 @@ def Global_Masking_Thresholds(Ti, Tq):
     for i in range(Ti.shape[0]):
         sum = np.sum(10 ** (0.1 * Ti[i, :]))
         Tg[i] = 10 * np.log10(10 ** (0.1 * Tq[i]) + sum)
-
     return Tg
 
 
@@ -181,10 +178,11 @@ def plot_hearing_threshold(Tg,Tq,STr,Kmax):
     f_Hz = fs / (2 * MN) * np.arange(0,Kmax+1)
     f_barks = Hz2Barks(f_Hz)
 
-    plt.plot(f_barks,Tg,label='Tq')
-    plt.plot(f_barks,np.squeeze(Tq.reshape(-1,1)),label='Tg')
-    markerline, stemlines,baseline =plt.stem(f_barks[STr],Tg[STr], '-.',linefmt  = 'purple', bottom=-12, label='maskers',basefmt=" ")
-    plt.setp(stemlines, 'linestyle', 'dotted')
+    plt.plot(f_barks,Tg,label='Tg')
+    plt.plot(f_barks,np.squeeze(Tq.reshape(-1,1)),label='Tq')
+    if len(STr) != 0:
+        markerline, stemlines,baseline =plt.stem(f_barks[STr],Tg[STr], '-.',linefmt  = 'purple', bottom=-12, label='maskers',basefmt=" ")
+        plt.setp(stemlines, 'linestyle', 'dotted')
 
     plt.ylim(-10,70)
     plt.ylabel('Masking Threshold')
