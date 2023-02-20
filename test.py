@@ -1,9 +1,14 @@
-import numpy as np
-import DCT,codec0
-from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
 import wave
-import tonalMasking
+
+import numpy as np
+
+import DCT
 import Quantizer
+import codec0
+import huffman
+import rle
+import tonalMasking
+from mp3 import make_mp3_analysisfb
 
 M = 32
 N = 36
@@ -28,20 +33,26 @@ with wave.open("myfile.wav", "rb") as wave_file:
     Y_tot, x_hat = codec0.codec0(wave_data, H, M, N)
 
     num_of_frames = len(wave_data) / (N * M)
-    Kmax = M*N - 1
+    Kmax = M * N - 1
     Dk = tonalMasking.Dksparse(Kmax)
 
-
-    frame = Y_tot[4*N:5*N, :]
+    frame = Y_tot[4 * N:5 * N, :]
     c = DCT.frameDCT(frame)
-    Tg = tonalMasking.psycho(c,Dk)
-    cs,sc = Quantizer.DCT_band_scale(c)
+    Tg = tonalMasking.psycho(c, Dk)
+    cs, sc = Quantizer.DCT_band_scale(c)
     # s = Quantizer.quantizer(cs,4)
     # d = Quantizer.dequantizer(s,4)
-    symb_index,SF,B = Quantizer.all_bands_quantizer(c,Tg)
+    symb_index, SF, B = Quantizer.all_bands_quantizer(c, Tg)
     xh = Quantizer.all_bands_dequantizer(symb_index, B, SF)
 
     eb = np.abs(c.T - xh)
     P_eb = 10 * np.log10(eb ** 2)
     MSE = np.mean(eb)
+
+    symb_index = np.array([0, 0, 1, 2, 3, 3, 2, 0, 0, 0, 0, 2, 3, 4])
+    run_symbols = rle.RLEencode(K=len(symb_index), symb_index=symb_index)
+    decoded_symb_index = rle.RLEdecode(K=len(run_symbols), run_symbols=run_symbols)
+
+    frame_stream, frame_symbol_prob = huffman.huff(run_symbols)
+    run_symbols2 = huffman.ihuff(frame_stream, frame_symbol_prob)
     breakpoint()
