@@ -10,6 +10,9 @@ class Node:
     def __lt__(self, other):
         return True
 
+    def __gt__(self, other):
+        return True
+
     def children(self):
         return self.left, self.right
 
