@@ -8,6 +8,10 @@ if __name__ == '__main__':
     import sounddevice as sd
     from scipy.io.wavfile import write
     import DCT
+    import tonalMasking
+    import Quantizer
+    import rle
+    import huffman
 
     draw_plots = True
     play_sounds = False
@@ -97,24 +101,74 @@ if __name__ == '__main__':
             sd.play(x_hat.astype(np.int16), fs)
 
         # Output the filtered file
-        write("x_hat.wav", fs, x_hat.astype(np.int16))
+        write("x_hat_subband_filtering.wav", fs, x_hat.astype(np.int16))
 
         # SNR
         shift = L - M
 
-        x_hat_shifted = x_hat[shift:]
-        wave_data_shifted = wave_data[:-shift]
-        x_hat_shifted = x_hat_shifted.astype('int64')
-        wave_data_shifted = wave_data_shifted.astype('int64')
+        x_hat_shifted = x_hat[shift:].astype('int64')
+        wave_data_shifted = wave_data[:-shift].astype('int64')
 
         P_signal = 10 * np.log10(np.mean(wave_data_shifted ** 2))
         P_noise = 10 * np.log10(np.mean((wave_data_shifted - x_hat_shifted) ** 2))
 
-        SNR = P_signal/P_noise
-        breakpoint()
+        SNR_subband = P_signal/P_noise
 
         """
         Section 3.2- DCT 
         """
         c = DCT.frameDCT(Y_tot[:N, :])
         Y = DCT.iframeDCT(c, M, N)
+
+        """
+        Section 3.3- Noise Threshold
+        """
+        P = DCT.DCTpower(c)
+        Kmax = M * N - 1
+        Dk = tonalMasking.Dksparse(Kmax)
+        Tg = tonalMasking.psycho(c, Dk)
+
+        """
+        Section 3.4- Quantization
+        """
+        cs, sc = Quantizer.DCT_band_scale(c)
+        symb_index, SF, B = Quantizer.all_bands_quantizer(c, Tg)
+
+        """
+        Section 3.5- Run Length Encoding
+        """
+        run_symbols = rle.RLEencode(K=len(symb_index), symb_index=symb_index)
+
+        """
+        Section 3.6- Huffman Encoding
+        """
+        frame_stream, frame_symbol_prob = huffman.huff(run_symbols)
+
+        """
+        Huffman Decoding
+        """
+        i_run_symbols = huffman.ihuff(frame_stream, frame_symbol_prob)
+
+        """
+        Run Length Decoding
+        """
+        decoded_symb_index = rle.RLEdecode(K=len(i_run_symbols), run_symbols=i_run_symbols)
+
+        """
+        De-quantization
+        """
+        xh = Quantizer.all_bands_dequantizer(symb_index, B, SF)
+        final_x_hat = np.zeros_like(wave_data)
+
+        """
+        Final SNR Calculation
+        """
+        final_x_hat_shifted = final_x_hat[shift:].astype('int64')
+        wave_data_shifted = wave_data[:-shift].astype('int64')
+
+        # signal = 10 * np.log10(np.mean(wave_data_shifted ** 2))
+        # noise = 10 * np.log10(np.mean((wave_data_shifted - final_x_hat_shifted) ** 2))
+        #
+        # SNR_final = signal / noise
+        write("final_x_hat.wav", fs, final_x_hat_shifted.astype(np.int16))
+        breakpoint()
