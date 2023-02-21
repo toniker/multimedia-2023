@@ -32,16 +32,17 @@ def huff(run_symbols):
     h = [(p, (v, r)) for v, r, p in frame_symbol_prob]
     heapq.heapify(h)
 
-    while len(h) >= 2:
-        p1, s1 = heapq.heappop(h)
-        p2, s2 = heapq.heappop(h)
-        node = Node(s1, s2)
-        heapq.heappush(h, (p1 + p2, node))
+    if len(h) >= 2:
+        while len(h) >= 2:
+            p1, s1 = heapq.heappop(h)
+            p2, s2 = heapq.heappop(h)
+            node = Node(s1, s2)
+            heapq.heappush(h, (p1 + p2, node))
 
-    # Get the root node of the tree
-    _, node = h[0]
+        # Get the root node of the tree
+        _, node = h[0]
 
-    del p1, s1, p2, s2, h, _
+        del p1, s1, p2, s2, h, _
 
     def generate_codes(node, code="", codes={}):
         # If the node is a leaf, save the code for the symbol.
